@@ -52,6 +52,9 @@ void DBSimulation::userSelection() {
       rollback();
     } else if (userInput == "14") {
       break;
+    } else {
+      cout << "Incorrect input. Enter any number from 1-14." << endl;
+      cout << endl;
     }
   }
   exit();
