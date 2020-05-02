@@ -67,8 +67,18 @@ void FileIO::deserialize() {
 void FileIO::serialize() {
   //first serialize the studentTable
   outFS.open(m_studentFile);
+  TreeNode<Student>* root = studentTable->getRootNode();
+  traverse(root);
 
-  //NEED TO FIGURE OUT HOW TO ITERATE THROUGH THE TREE
-
+  outFS.close();
   //then serialize the facultyTable
+}
+
+void traverse(TreeNode<Student>* node) {
+  if (node == NULL) {
+    return;
+  }
+  traverse(node->left);
+  outFS.write((char*)&(node->key), sizeof(node->key));
+  traverse(node->right);
 }

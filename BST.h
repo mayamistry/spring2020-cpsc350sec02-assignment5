@@ -17,8 +17,11 @@ public:
   TreeNode<T>* getSuccessor(TreeNode<T> *d);
   void printTree(TreeNode<T> *node);
 
+  TreeNode<T>* getRootNode();
+
   //create a method that traverses through the entire tree and just returns the node
-  //TreeNode<T>* traverse(TreeNode)
+  T* traverse(TreeNode<T>* node);
+
 
 private:
   TreeNode<T> *root;
@@ -241,4 +244,20 @@ TreeNode<T>* BST<T>::getSuccessor(TreeNode<T> *d) {
     successor->right = d->right;
   }
   return successor;
+}
+
+template <class T>
+T* traverse(TreeNode<T>* node) {
+  if (node == NULL) {
+    return NULL;
+  }
+  traverse(node->left);
+  return node->value;
+  traverse(node->right);
+}
+
+
+template <class T>
+TreeNode<T>* BST<T>::getRootNode() {
+  return root;
 }
