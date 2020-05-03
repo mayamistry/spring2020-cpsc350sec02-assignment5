@@ -33,6 +33,7 @@ void FileIO::checkIfEmpty() {
 }
 
 //use this method to deserialize the files if they do exist
+//i think this doesn't work right now
 void FileIO::deserialize() {
   //first do the student file
   inFS.open(m_studentFile);
@@ -61,7 +62,6 @@ void FileIO::deserialize() {
   facultyTable = simulate->getFacultyTree();
   serialize();
 }
-
 
 void FileIO::serialize() {
   //first serialize the studentTable

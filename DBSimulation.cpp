@@ -147,7 +147,11 @@ void DBSimulation::printFaculty(TreeNode<Faculty>* node) {
   cout << "Department: " << f->getDepartment() << endl;
   cout << "List of advisees (ID #'s): " << endl;
   LinkedList<int> *advisees = f->getAdvisees();
-  advisees->printList();
+  if (advisees == NULL) {
+    cout << "This faculty member has no advisees" << endl;
+  } else {
+    advisees->printList();
+  }
   cout << endl;
   printFaculty(node->right);
 }
