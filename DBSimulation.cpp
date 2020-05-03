@@ -205,19 +205,23 @@ void DBSimulation::printAdviseeInfo(Faculty *f) {
 
 //option 7
 void DBSimulation::addStudent() {
+  //use getline method for all of the string methods since they might have spaces
   cout << "Enter all of the new information for the student being added: " << endl;
   int id = 0;
   cout << "Enter the ID of the student: " << endl;
   cin >> id;
   string studentName = "";
   cout << "Enter the name of the student: " << endl;
-  cin >> studentName;
+  cin.ignore();
+  getline(cin, studentName); //use get line because this might have spaces
   string field = "";
   cout << "Enter the field of the student (freshman, sophomore, etc.): " << endl;
-  cin >> field;
+  cin.ignore();
+  getline(cin, field);
   string major = "";
   cout << "Enter the student's major: " << endl;
-  cin >> major;
+  cin.ignore();
+  getline(cin, major);
   double gpa = 0.0;
   cout << "Enter the GPA of student: " << endl;
   cin >> gpa;
@@ -261,13 +265,15 @@ void DBSimulation::addFaculty() {
   cin >> id;
   string facultyName = "";
   cout << "Enter the name of the faculty member: " << endl;
-  cin >> facultyName;
+  cin.ignore();
+  getline(cin, facultyName);
   string field = "";
   cout << "Enter the field of the student (associate, lecturer etc.): " << endl;
   cin >> field;
   string department = "";
   cout << "Enter the department of the faculty member: " << endl;
-  cin >> department;
+  cin.ignore();
+  getline(cin, department);
   Faculty *f = new Faculty(id, facultyName, field, department);
   m_masterFaculty->insert(id, f);
   cout << endl;

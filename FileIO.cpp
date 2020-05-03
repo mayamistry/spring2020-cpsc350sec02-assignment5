@@ -21,6 +21,8 @@ void FileIO::checkIfEmpty() {
   if (!inFS.is_open()) {
     cout << "Files don't exist. Program will create an empty student and faculty table" << endl;
     DBSimulation *simulate = new DBSimulation();
+    cout << endl;
+    cout << "NOTICE: Since database is empty, insert new faculty members first before adding students!!" << endl;
     simulate->userSelection();
     //serialize after user finishes doing everything
     serialize();
@@ -52,6 +54,9 @@ void FileIO::deserialize() {
     int key = f->getId(); //get the key before inserting into tree
     facultyTable->insert(key, f);
   }
+  inFS.read((char*)&f, sizeof(f));
+  int key1 = f->getId();
+  facultyTable->insert(key1, f);
 
   inFS.close();
 
