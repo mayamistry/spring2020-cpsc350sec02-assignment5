@@ -8,12 +8,12 @@ Faculty::Faculty() {
   m_advisees = NULL;
 }
 
-Faculty::Faculty(int id, string name, string level, string department, LinkedList<int> *advisees) {
+Faculty::Faculty(int id, string name, string level, string department) {
   m_ID = id;
   m_name = name;
   m_level = level;
   m_department = department;
-  m_advisees = advisees;
+  m_advisees = NULL;
 }
 
 Faculty::~Faculty() {
@@ -57,6 +57,10 @@ void Faculty::setAdvisees(LinkedList<int> *advisees) {
 }
 
 LinkedList<int>* Faculty::getAdvisees() {
+  if (m_advisees->isEmpty()) {
+    cout << "This faculty has no advisees." << endl;
+    return NULL;
+  }
   return m_advisees;
 }
 

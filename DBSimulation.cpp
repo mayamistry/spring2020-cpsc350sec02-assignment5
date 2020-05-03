@@ -216,12 +216,12 @@ void DBSimulation::addStudent() {
   double gpa = 0.0;
   cout << "Enter the GPA of student: " << endl;
   cin >> gpa;
+  int facultyID = 0;
   //assign the student an advisor
   cout << "Here is the list of all of the advisors: " << endl;
   TreeNode<Faculty> *root = m_masterFaculty->getRootNode();
   printFaculty(root);
   cout << "Enter the faculty ID of which advisor you want: " << endl;
-  int facultyID = 0;
   cin >> facultyID;
   //need to check that the facultyID is valid
   Faculty *f = m_masterFaculty->search(facultyID);
@@ -261,8 +261,7 @@ void DBSimulation::addFaculty() {
   string department = "";
   cout << "Enter the department of the faculty member: " << endl;
   cin >> department;
-  LinkedList<int> *facultyAdvisees = NULL;
-  Faculty *f = new Faculty(id, facultyName, field, department, facultyAdvisees);
+  Faculty *f = new Faculty(id, facultyName, field, department);
   m_masterFaculty->insert(id, f);
   cout << endl;
 }

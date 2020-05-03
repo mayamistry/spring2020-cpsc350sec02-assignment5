@@ -7,7 +7,7 @@
 class Faculty: public Person {
 public:
   Faculty(); //Default constructor
-  Faculty(int id, string name, string level, string department, LinkedList<int> *advisees); //Overloaded constructor
+  Faculty(int id, string name, string level, string department); //Overloaded constructor
   ~Faculty(); //Destructor
 
   //from person class

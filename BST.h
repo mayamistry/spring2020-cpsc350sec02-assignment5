@@ -79,7 +79,11 @@ TreeNode<T>* BST<T>::getMin() {
 
 template <class T>
 bool BST<T>::isEmpty() {
-  return (root == NULL);
+  if (root == NULL) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 template <class T>
@@ -89,14 +93,12 @@ void BST<T>::insert(int k, T* value) {
   //already exist in the tree by calling the search function
 
   TreeNode<T> *node = new TreeNode<T>(k, value);
-
   if (isEmpty()) {
     root = node; //first node in tree since it would initially be empty
   } else {
     //not an empty tree
     TreeNode<T> *curr = root; //start at root
     TreeNode<T> *parent;
-
     while (curr != NULL) {
       parent = curr;
       if (k < curr->key) {
