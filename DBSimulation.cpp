@@ -25,25 +25,62 @@ void DBSimulation::userSelection() {
     cin >> userInput;
     cout << endl;
     if (userInput == "1") {
-      printStudents();
+      TreeNode<Student>* root = m_masterStudent->getRootNode();
+      printStudents(root);
     } else if (userInput == "2") {
-      printFaculty();
+      TreeNode<Faculty>* root = m_masterFaculty->getRootNode();
+      printFaculty(root);
     } else if (userInput == "3") {
-      displayStudentInfo();
+      cout << "What student ID would you like to look up? Enter it here: " << endl;
+      int studentID = 0;
+      cin >> studentID;
+      Student *s = m_masterStudent->search(studentID);
+      if (s != NULL) {
+        displayStudentInfo(s);
+      } else {
+        cout << "Student doesn't exist in the database. Try again." << endl;
+        cout << endl;
+      }
     } else if (userInput == "4") {
-      displayFacultyInfo();
+      cout << "What faculty ID would you like to look up? Enter it here: " << endl;
+      int facultyID = 0;
+      cin >> facultyID;
+      Faculty *f = m_masterFaculty->search(facultyID);
+      if (f != NULL) {
+        displayFacultyInfo(f);
+      } else {
+        cout << "Faculty doesn't exist in the database. Try again." << endl;
+      }
     } else if (userInput == "5") {
-      printAdvisorInfo();
+      cout << "Which student's faculty advisor do you want to look up? Enter the student's ID: " << endl;
+      int studentID = 0;
+      cin >> studentID;
+      Student *s = m_masterStudent->search(studentID);
+      if (s != NULL) {
+        printAdvisorInfo(s);
+      } else {
+        cout << "Student doesn't exist in the database. Try again." << endl;
+        cout << endl;
+      }
     } else if (userInput == "6") {
-      printAdviseeInfo();
+      cout << "What faculty ID would you like to look up? Enter it here: " << endl;
+      int facultyID = 0;
+      cin >> facultyID;
+      Faculty *f = m_masterFaculty->search(facultyID);
+      if (f != NULL) {
+        printAdviseeInfo(f);
+      } else {
+        cout << "Faculty doesn't exist in the database. Try again." << endl;
+        cout << endl;
+      }
     } else if (userInput == "7") {
       addStudent();
     } else if (userInput == "8") {
       deleteStudent();
     } else if (userInput == "9") {
-      deleteFaculty();
-    } else if (userInput == "10") {
       addFaculty();
+    } else if (userInput == "10") {
+      deleteFaculty();
     } else if (userInput == "11") {
       changeStudentAdvisor();
     } else if (userInput == "12") {
@@ -80,38 +117,123 @@ void DBSimulation::printMenu() {
 }
 
 //option 1
-void DBSimulation::printStudents() {
-  cout << "Print all student" << endl;
+//using inorder traversal
+void DBSimulation::printStudents(TreeNode<Student>* node) {
+  if (node == NULL) {
+    return;
+  }
+  printStudents(node->left);
+  Student *s = node->value;
+  cout << "Student ID: " << s->getId() << endl;
+  cout << "Student name: " << s->getName() << endl;
+  cout << "Field level: " << s->getLevel() << endl;
+  cout << "Major: " << s->getMajor() << endl;
+  cout << "GPA: " << s->getGpa() << endl;
+  cout << "Advisor ID: " << s->getAdvisor() << endl;
+  cout << endl;
+  printStudents(node->right);
 }
 
 //option 2
-void DBSimulation::printFaculty() {
-  cout << "Print all faculty" << endl;
+void DBSimulation::printFaculty(TreeNode<Faculty>* node) {
+  if (node == NULL) {
+    return;
+  }
+  printFaculty(node->left);
+  Faculty *f = node->value;
+  cout << "Faculty ID: " << f->getId() << endl;
+  cout << "Faculty name: " << f->getName() << endl;
+  cout << "Field level: " << f->getLevel() << endl;
+  cout << "Department: " << f->getDepartment() << endl;
+  cout << "List of advisees (ID #'s): " << endl;
+  LinkedList<int> *advisees = f->getAdvisees();
+  advisees->printList();
+  cout << endl;
+  printFaculty(node->right);
 }
 
 //option 3
-void DBSimulation::displayStudentInfo() {
-  cout << "Display student info" << endl;
+void DBSimulation::displayStudentInfo(Student *s) {
+  cout << "Here is the information of the student: " << endl;
+  cout << "Student ID: " << s->getId() << endl;
+  cout << "Student name: " << s->getName() << endl;
+  cout << "Field level: " << s->getLevel() << endl;
+  cout << "Major: " << s->getMajor() << endl;
+  cout << "GPA: " << s->getGpa() << endl;
+  cout << "Advisor ID: " << s->getAdvisor() << endl;
+  cout << endl;
 }
 
 //option 4
-void DBSimulation::displayFacultyInfo() {
-  cout << "Display faculty info" << endl;
+void DBSimulation::displayFacultyInfo(Faculty *f) {
+  cout << "Here is the information of the faculty: " << endl;
+  cout << "Faculty ID: " << f->getId() << endl;
+  cout << "Faculty name: " << f->getName() << endl;
+  cout << "Field level: " << f->getLevel() << endl;
+  cout << "Department: " << f->getDepartment() << endl;
+  cout << "List of advisees (ID #'s): " << endl;
+  LinkedList<int> *advisees = f->getAdvisees();
+  advisees->printList();
+  cout << endl;
 }
 
 //option 5
-void DBSimulation::printAdvisorInfo() {
-  cout << "Print student's advisor info" << endl;
+void DBSimulation::printAdvisorInfo(Student *s) {
+  int facultyID = s->getAdvisor();
+  Faculty *f = m_masterFaculty->search(facultyID);
+  displayFacultyInfo(f);
 }
 
 //option 6
-void DBSimulation::printAdviseeInfo() {
-  cout << "Print faculty's advisee info" << endl;
+void DBSimulation::printAdviseeInfo(Faculty *f) {
+  cout << "Here's the list of this faculty's advisees: " << endl;
+  LinkedList<int> *advisees = f->getAdvisees();
+  ListNode<int> *curr = advisees->front;
+  while (curr != NULL) {
+    int studentID = *curr->data;
+    Student *s = m_masterStudent->search(studentID);
+    displayStudentInfo(s);
+    curr = curr->next;
+  }
+  cout << endl;
 }
 
 //option 7
 void DBSimulation::addStudent() {
-  cout << "Add student to table" << endl;
+  cout << "Enter all of the new information for the student being added: " << endl;
+  int id = 0;
+  cout << "Enter the ID of the student: " << endl;
+  cin >> id;
+  string studentName = "";
+  cout << "Enter the name of the student: " << endl;
+  cin >> studentName;
+  string field = "";
+  cout << "Enter the field of the student (freshman, sophomore, etc.): " << endl;
+  cin >> field;
+  string major = "";
+  cout << "Enter the student's major: " << endl;
+  cin >> major;
+  double gpa = 0.0;
+  cout << "Enter the GPA of student: " << endl;
+  cin >> gpa;
+  //assign the student an advisor
+  cout << "Here is the list of all of the advisors: " << endl;
+  TreeNode<Faculty> *root = m_masterFaculty->getRootNode();
+  printFaculty(root);
+  cout << "Enter the faculty ID of which advisor you want: " << endl;
+  int facultyID = 0;
+  cin >> facultyID;
+  //need to check that the facultyID is valid
+  Faculty *f = m_masterFaculty->search(facultyID);
+  while (f == NULL) {
+    cout << "The faculty ID you entered is invalid. Try again: " << endl;
+    cin >> facultyID;
+    f = m_masterFaculty->search(facultyID);
+  }
+  //create an object
+  Student *s = new Student(id, studentName, field, major, gpa, facultyID);
+  m_masterStudent->insert(id, s);
+  cout << endl;
 }
 
 //option 8
@@ -119,14 +241,30 @@ void DBSimulation::deleteStudent() {
   cout << "Delete student from table" << endl;
 }
 
-//option 9
+//option 10
 void DBSimulation::deleteFaculty() {
   cout << "Delete faculty from table" << endl;
 }
 
-//option 10
+//option 9
 void DBSimulation::addFaculty() {
-  cout << "Add faculty to table" << endl;
+  cout << "Enter all of the new information for the faculty member being added: " << endl;
+  int id = 0;
+  cout << "Enter the ID of the faculty: " << endl;
+  cin >> id;
+  string facultyName = "";
+  cout << "Enter the name of the faculty member: " << endl;
+  cin >> facultyName;
+  string field = "";
+  cout << "Enter the field of the student (associate, lecturer etc.): " << endl;
+  cin >> field;
+  string department = "";
+  cout << "Enter the department of the faculty member: " << endl;
+  cin >> department;
+  LinkedList<int> *facultyAdvisees = NULL;
+  Faculty *f = new Faculty(id, facultyName, field, department, facultyAdvisees);
+  m_masterFaculty->insert(id, f);
+  cout << endl;
 }
 
 //option 11

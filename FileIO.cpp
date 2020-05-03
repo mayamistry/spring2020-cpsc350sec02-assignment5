@@ -2,8 +2,8 @@
 
 //initialzie file names for the .bin files
 FileIO::FileIO() {
-  string studentFile = "studentTable.bin";
-  string facultyFile = "facultyTable.bin";
+  m_studentFile = "studentTable.bin";
+  m_facultyFile = "facultyTable.bin";
   studentTable = new BST<Student>();
   facultyTable = new BST<Faculty>();
 }
@@ -19,7 +19,7 @@ void FileIO::checkIfEmpty() {
   //if the student file doesn't exist, that means the faculty one doesn't either
 
   if (!inFS.is_open()) {
-    cout << "File doesn't exist. Program will create an empty student table" << endl;
+    cout << "Files don't exist. Program will create an empty student and faculty table" << endl;
     DBSimulation *simulate = new DBSimulation();
     simulate->userSelection();
     //serialize after user finishes doing everything
@@ -34,7 +34,6 @@ void FileIO::checkIfEmpty() {
 
 //use this method to deserialize the files if they do exist
 void FileIO::deserialize() {
-
   //first do the student file
   inFS.open(m_studentFile);
   Student *s;

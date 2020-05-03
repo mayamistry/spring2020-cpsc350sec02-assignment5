@@ -11,14 +11,12 @@ class DBSimulation {
 
     void userSelection();
     void printMenu();
-
-    //user menu actions
-    void printStudents();
-    void printFaculty();
-    void displayStudentInfo();
-    void displayFacultyInfo();
-    void printAdvisorInfo();
-    void printAdviseeInfo();
+    void printStudents(TreeNode<Student> *node);
+    void printFaculty(TreeNode<Faculty> *node);
+    void displayStudentInfo(Student *s);
+    void displayFacultyInfo(Faculty *f);
+    void printAdvisorInfo(Student *s);
+    void printAdviseeInfo(Faculty *f);
     void addStudent();
     void deleteStudent();
     void deleteFaculty();

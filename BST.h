@@ -7,7 +7,7 @@ public:
   ~BST();
 
   void insert(int k, T* value); //insert based on value
-  bool search(int k, T* value);
+  T* search(int value);
   bool deleteNode(int k); //delete using the key here
 
   bool isEmpty();
@@ -122,13 +122,13 @@ void BST<T>::insert(int k, T* value) {
 
 //return type can vary, return whatever you want it to
 template <class T>
-bool BST<T>::search(int k, T* value){
+T* BST<T>::search(int value){
+  TreeNode<T> *curr = root;
   if (isEmpty()) {
-    return false;
+    return NULL;
   } else {
     //tree is not isEmpty
-    TreeNode<T> *curr = root;
-    while(curr->key != k) {
+    while(curr->key != value) {
       if (value < curr->key) {
         curr = curr->left;
       } else {
@@ -136,11 +136,11 @@ bool BST<T>::search(int k, T* value){
       }
       if (curr == NULL) {
         //didn't find the value
-        return false;
+        return NULL;
       }
     }
   }
-  return true; //we found the node
+  return curr->value; //we found the node
 }
 
 template <class T>
