@@ -148,9 +148,7 @@ void DBSimulation::printFaculty(TreeNode<Faculty>* node) {
   cout << "Department: " << f->getDepartment() << endl;
   cout << "List of advisees (ID #'s): " << endl;
   LinkedList<int> *advisees = f->getAdvisees();
-  if (advisees == NULL) {
-    cout << "This faculty member has no advisees" << endl;
-  } else {
+  if (advisees != NULL) {
     advisees->printList();
   }
   cout << endl;
@@ -207,9 +205,16 @@ void DBSimulation::printAdviseeInfo(Faculty *f) {
 void DBSimulation::addStudent() {
   //use getline method for all of the string methods since they might have spaces
   cout << "Enter all of the new information for the student being added: " << endl;
+  cout << endl;
   int id = 0;
   cout << "Enter the ID of the student: " << endl;
   cin >> id;
+  while (cin.fail()) {
+    cout << "Wrong data type. Please type in an integer for the ID: " << endl;
+    cin.clear();
+    cin.ignore();
+    cin >> id;
+  }
   string studentName = "";
   cout << "Enter the name of the student: " << endl;
   cin.ignore();
@@ -225,6 +230,12 @@ void DBSimulation::addStudent() {
   double gpa = 0.0;
   cout << "Enter the GPA of student: " << endl;
   cin >> gpa;
+  while (cin.fail()) {
+    cout << "Wrong data type. Please type in a number (ex. 3.0): " << endl;
+    cin.clear();
+    cin.ignore();
+    cin >> gpa;;
+  }
   int facultyID = 0;
   //assign the student an advisor
   cout << "Here is the list of all of the advisors: " << endl;
@@ -232,6 +243,12 @@ void DBSimulation::addStudent() {
   printFaculty(root);
   cout << "Enter the faculty ID of which advisor you want: " << endl;
   cin >> facultyID;
+  while (cin.fail()) {
+    cout << "Wrong data type. Please type in an integer for the faculty ID: " << endl;
+    cin.clear();
+    cin.ignore();
+    cin >> facultyID;
+  }
   //need to check that the facultyID is valid
   Faculty *f = m_masterFaculty->search(facultyID);
   while (f == NULL) {
@@ -260,9 +277,16 @@ void DBSimulation::deleteFaculty() {
 //option 9
 void DBSimulation::addFaculty() {
   cout << "Enter all of the new information for the faculty member being added: " << endl;
+  cout << endl;
   int id = 0;
   cout << "Enter the ID of the faculty: " << endl;
   cin >> id;
+  while (cin.fail()) {
+    cout << "Wrong data type. Please type in an integer for the ID: " << endl;
+    cin.clear();
+    cin.ignore();
+    cin >> id;
+  }
   string facultyName = "";
   cout << "Enter the name of the faculty member: " << endl;
   cin.ignore();

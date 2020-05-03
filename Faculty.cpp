@@ -57,6 +57,10 @@ void Faculty::setAdvisees(LinkedList<int> *advisees) {
 }
 
 LinkedList<int>* Faculty::getAdvisees() {
+  if (m_advisees->isEmpty()) {
+    cout << "This faculty member has no advisees. " << endl;
+    return NULL;
+  }
   return m_advisees;
 }
 
