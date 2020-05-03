@@ -7,10 +7,10 @@ class LinkedList {
     LinkedList();
     ~LinkedList();
 
-    void insertFront(T* data);
-    T* removeFront();
-    int search(T* val); //returns the position of the node we are looking for
-    void remove(T* val); //removes wherever the node is using
+    void insertFront(T data);
+    T removeFront();
+    int search(T val); //returns the position of the node we are looking for
+    void remove(T val); //removes wherever the node is using
     //NEED TO DRAW THIS OUT LATER TO MAKE IT WORK
 
     unsigned int getSize();
@@ -55,7 +55,7 @@ void LinkedList<T>::printList() {
 }
 
 template <class T>
-void LinkedList<T>::insertFront(T* data) {
+void LinkedList<T>::insertFront(T data) {
   ListNode<T> *node = new ListNode<T>(data);
   node->next = front;
   front = node;
@@ -63,7 +63,7 @@ void LinkedList<T>::insertFront(T* data) {
 }
 
 template <class T>
-T* LinkedList<T>::removeFront() {
+T LinkedList<T>::removeFront() {
   if (isEmpty()) {
     cout << "List is already empty." << endl;
     return 1;
@@ -80,7 +80,7 @@ T* LinkedList<T>::removeFront() {
 }
 
 template <class T>
-int LinkedList<T>::search(T* val) {
+int LinkedList<T>::search(T val) {
   int pos = -1;
   ListNode<T> *curr = front;
   while (curr != NULL) {
@@ -101,7 +101,7 @@ int LinkedList<T>::search(T* val) {
 }
 
 template <class T>
-void LinkedList<T>::remove(T* val) {
+void LinkedList<T>::remove(T val) {
   ListNode<T> *curr;
   ListNode<T> *prev = front;
 

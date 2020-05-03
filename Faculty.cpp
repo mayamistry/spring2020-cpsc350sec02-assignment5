@@ -5,7 +5,7 @@ Faculty::Faculty() {
   m_name = "";
   m_level = "";
   m_department = "";
-  m_advisees = NULL;
+  m_advisees = new LinkedList<int>();
 }
 
 Faculty::Faculty(int id, string name, string level, string department) {
@@ -13,7 +13,7 @@ Faculty::Faculty(int id, string name, string level, string department) {
   m_name = name;
   m_level = level;
   m_department = department;
-  m_advisees = NULL;
+  m_advisees = new LinkedList<int>();
 }
 
 Faculty::~Faculty() {

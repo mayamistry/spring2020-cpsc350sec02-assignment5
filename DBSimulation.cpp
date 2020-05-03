@@ -1,8 +1,9 @@
 #include "DBSimulation.h"
 
 DBSimulation::DBSimulation() {
-  m_masterStudent = NULL;
-  m_masterFaculty = NULL;
+  //create two empty BSTs
+  m_masterStudent = new BST<Student>();
+  m_masterFaculty = new BST<Faculty>();
 }
 
 DBSimulation::DBSimulation(BST<Student> *student, BST<Faculty> *faculty) {
@@ -194,7 +195,7 @@ void DBSimulation::printAdviseeInfo(Faculty *f) {
   LinkedList<int> *advisees = f->getAdvisees();
   ListNode<int> *curr = advisees->front;
   while (curr != NULL) {
-    int studentID = *curr->data;
+    int studentID = curr->data;
     Student *s = m_masterStudent->search(studentID);
     displayStudentInfo(s);
     curr = curr->next;
@@ -235,6 +236,8 @@ void DBSimulation::addStudent() {
     f = m_masterFaculty->search(facultyID);
   }
   //create an object
+  f->getAdvisees()->insertFront(id);
+
   Student *s = new Student(id, studentName, field, major, gpa, facultyID);
   m_masterStudent->insert(id, s);
   cout << endl;

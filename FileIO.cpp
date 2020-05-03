@@ -33,7 +33,7 @@ void FileIO::checkIfEmpty() {
 }
 
 //use this method to deserialize the files if they do exist
-//i think this doesn't work right now
+//DESERIALIZE DOESN'T WORK
 void FileIO::deserialize() {
   //first do the student file
   inFS.open(m_studentFile);
@@ -63,6 +63,8 @@ void FileIO::deserialize() {
   serialize();
 }
 
+
+//I think serialize doesn't work right now
 void FileIO::serialize() {
   //first serialize the studentTable
   outFS.open(m_studentFile);
@@ -84,7 +86,7 @@ void FileIO::traverseStudents(TreeNode<Student> *node, ofstream &o) {
     return;
   }
   traverseStudents(node->left, o);
-  o.write((char*)&(node->key), sizeof(node->key));
+  o.write((char*)&(node->value), sizeof(node->value));
   traverseStudents(node->right, o);
 }
 
@@ -93,6 +95,6 @@ void FileIO::traverseFaculty(TreeNode<Faculty> *node, ofstream &o) {
     return;
   }
   traverseFaculty(node->left, o);
-  o.write((char*)&(node->key), sizeof(node->key));
+  o.write((char*)&(node->value), sizeof(node->value));
   traverseFaculty(node->right, o);
 }
