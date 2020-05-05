@@ -24,17 +24,41 @@ void DBSimulation::userSelection() {
     printMenu();
     cout << "Enter input here: ";
     cin >> userInput;
+    while (cin.fail()) {
+      cout << "Wrong data type. Please type in an integer to choose an action from the menu: " << endl;
+      cin.clear();
+      cin.ignore();
+      cin >> userInput;
+    }
     cout << endl;
     if (userInput == "1") {
       TreeNode<Student>* root = m_masterStudent->getRootNode();
+      if (root == NULL) {
+        cout << "Student table is empty!" << endl;
+        continue;
+      }
+      cout << "Here are all of the students in the database: " << endl;
+      cout << endl;
       printStudents(root);
     } else if (userInput == "2") {
       TreeNode<Faculty>* root = m_masterFaculty->getRootNode();
+      if (root == NULL) {
+        cout << "Faculty table is empty!" << endl;
+        continue;
+      }
+      cout << "Here are all of the faculty in the database: " << endl;
+      cout << endl;
       printFaculty(root);
     } else if (userInput == "3") {
       cout << "What student ID would you like to look up? Enter it here: " << endl;
       int studentID = 0;
       cin >> studentID;
+      while (cin.fail()) {
+        cout << "Wrong data type. Please type in an integer for the ID: " << endl;
+        cin.clear();
+        cin.ignore();
+        cin >> studentID;
+      }
       Student *s = m_masterStudent->search(studentID);
       if (s != NULL) {
         displayStudentInfo(s);
@@ -46,6 +70,12 @@ void DBSimulation::userSelection() {
       cout << "What faculty ID would you like to look up? Enter it here: " << endl;
       int facultyID = 0;
       cin >> facultyID;
+      while (cin.fail()) {
+        cout << "Wrong data type. Please type in an integer for the ID: " << endl;
+        cin.clear();
+        cin.ignore();
+        cin >> facultyID;
+      }
       Faculty *f = m_masterFaculty->search(facultyID);
       if (f != NULL) {
         displayFacultyInfo(f);
@@ -56,6 +86,12 @@ void DBSimulation::userSelection() {
       cout << "Which student's faculty advisor do you want to look up? Enter the student's ID: " << endl;
       int studentID = 0;
       cin >> studentID;
+      while (cin.fail()) {
+        cout << "Wrong data type. Please type in an integer for the ID: " << endl;
+        cin.clear();
+        cin.ignore();
+        cin >> studentID;
+      }
       Student *s = m_masterStudent->search(studentID);
       if (s != NULL) {
         printAdvisorInfo(s);
@@ -67,6 +103,12 @@ void DBSimulation::userSelection() {
       cout << "What faculty ID would you like to look up? Enter it here: " << endl;
       int facultyID = 0;
       cin >> facultyID;
+      while (cin.fail()) {
+        cout << "Wrong data type. Please type in an integer for the ID: " << endl;
+        cin.clear();
+        cin.ignore();
+        cin >> facultyID;
+      }
       Faculty *f = m_masterFaculty->search(facultyID);
       if (f != NULL) {
         printAdviseeInfo(f);
@@ -99,6 +141,7 @@ void DBSimulation::userSelection() {
 }
 
 void DBSimulation::printMenu() {
+  cout << "-------------------------------------------------------------------------------" << endl;
   cout << "Here is the menu. Enter the # of which action you want perform: " << endl;
   cout << "1. Print all students and their information (sorted by ascending id #)" << endl;
   cout << "2. Print all faculty and their information (sorted by ascending id #)" << endl;
@@ -114,6 +157,7 @@ void DBSimulation::printMenu() {
   cout << "12. Remove an advisee from a faculty member given the ids" << endl;
   cout << "13. Rollback" << endl;
   cout << "14. Exit " << endl;
+  cout << "------------------------------------------------------------------------------" << endl;
   cout << endl;
 }
 
@@ -148,7 +192,7 @@ void DBSimulation::printFaculty(TreeNode<Faculty>* node) {
   cout << "Department: " << f->getDepartment() << endl;
   cout << "List of advisees (ID #'s): " << endl;
   LinkedList<int> *advisees = f->getAdvisees();
-  if (advisees != NULL) {
+  if (!advisees->isEmpty()) {
     advisees->printList();
   }
   cout << endl;
@@ -176,7 +220,9 @@ void DBSimulation::displayFacultyInfo(Faculty *f) {
   cout << "Department: " << f->getDepartment() << endl;
   cout << "List of advisees (ID #'s): " << endl;
   LinkedList<int> *advisees = f->getAdvisees();
-  advisees->printList();
+  if (!advisees->isEmpty()) {
+    advisees->printList();
+  }
   cout << endl;
 }
 
@@ -221,8 +267,7 @@ void DBSimulation::addStudent() {
   getline(cin, studentName); //use get line because this might have spaces
   string field = "";
   cout << "Enter the field of the student (freshman, sophomore, etc.): " << endl;
-  cin.ignore();
-  getline(cin, field);
+  cin >> field;
   string major = "";
   cout << "Enter the student's major: " << endl;
   cin.ignore();
@@ -258,7 +303,6 @@ void DBSimulation::addStudent() {
   }
   //create an object
   f->getAdvisees()->insertFront(id);
-
   Student *s = new Student(id, studentName, field, major, gpa, facultyID);
   m_masterStudent->insert(id, s);
   cout << endl;
@@ -266,12 +310,114 @@ void DBSimulation::addStudent() {
 
 //option 8
 void DBSimulation::deleteStudent() {
-  cout << "Delete student from table" << endl;
+  printStudents(m_masterStudent->getRootNode());
+  if (m_masterStudent->isEmpty()) {
+    cout << "The student table is already empty! Can't delete." << endl;
+  }
+  int id = 0;
+  cout << "Enter the ID of the student who you want to delete: " << endl;
+  cin >> id;
+  while (cin.fail()) {
+    cout << "Wrong data type. Please type in an integer for the ID: " << endl;
+    cin.clear();
+    cin.ignore();
+    cin >> id;
+  }
+  Student *deletedStudent = m_masterStudent->search(id);
+  while (deletedStudent == NULL) {
+    cout << "The faculty ID you entered is invalid. Try again: " << endl;
+    cin >> id;
+    deletedStudent = m_masterStudent->search(id);
+  }
+  int facultyID = deletedStudent->getAdvisor();
+  displayStudentInfo(deletedStudent);
+  bool check = m_masterStudent->deleteNode(id);
+  if (check == true) {
+    cout << "Successfully deleted this student!" << endl;
+  } else {
+    cout << "Could not delete this student from the table. " << endl;
+  }
+  //deleting student from advisor's list
+  Faculty *f = m_masterFaculty->search(facultyID);
+  int pos = f->getAdvisees()->search(id);
+  f->getAdvisees()->removeAtPos(pos);
 }
 
 //option 10
 void DBSimulation::deleteFaculty() {
-  cout << "Delete faculty from table" << endl;
+  //first check if faculty list is empty before trying to delete it
+  if (m_masterFaculty->isEmpty()) {
+    cout << "Can't delete a faculty member becasue the table is empty. " << endl;
+  } else {
+    printFaculty(m_masterFaculty->getRootNode());
+    cout << "Enter the ID of the faculty you want to remove: " << endl;
+    int id = 0;
+    cin >> id;
+    while (cin.fail()) {
+      cout << "Wrong data type. Please type in an integer for the ID: " << endl;
+      cin.clear();
+      cin.ignore();
+      cin >> id;
+    }
+    //check if facultyID is valid before trying to remove it
+    Faculty *f = m_masterFaculty->search(id);
+    while (f == NULL) {
+      cout << "The faculty ID you entered is invalid. Try again: " << endl;
+      cin >> id;
+      f = m_masterFaculty->search(id);
+    }
+    Faculty *temp = f; //use this temp value to redistribute advisees
+    displayFacultyInfo(f);
+    bool check = m_masterFaculty->deleteNode(id);
+    //after getting valid faculty, need to distribute all of its advisees
+    Faculty *newFaculty;
+    if (!temp->getAdvisees()->isEmpty()) {
+      if (!m_masterFaculty->isEmpty()) {
+        //that means we need to redistrubute the advisees before actually deleting the node
+        TreeNode<Faculty> *newRoot = m_masterFaculty->getRootNode();
+        printFaculty(newRoot);
+        cout << "Enter the ID of the faculty you want to give the advisees to: " << endl;
+        int newID = 0;
+        cin >> newID;
+        while (cin.fail()) {
+          cout << "Wrong data type. Please type in an integer for the ID: " << endl;
+          cin.clear();
+          cin.ignore();
+          cin >> newID;
+        }
+        //check if facultyID is valid before trying to remove it
+        newFaculty = m_masterFaculty->search(newID);
+        while (newFaculty == NULL) {
+          cout << "The faculty ID you entered is invalid. Try again: " << endl;
+          cin >> id;
+          newFaculty = m_masterFaculty->search(newID);
+        }
+        //found the faculty we're going to use, so redistribute
+        ListNode<int> *curr = temp->getAdvisees()->front;
+        while (curr != NULL) {
+          int currId = curr->data;
+          Student *s = m_masterStudent->search(currId);
+          s->setAdvisor(newID);
+          newFaculty->getAdvisees()->insertFront(currId);
+          curr = curr->next;
+        }
+      } else {
+        ListNode<int> *curr = temp->getAdvisees()->front;
+        while (curr != NULL) {
+          int currId = curr->data;
+          Student *s = m_masterStudent->search(currId);
+          s->setAdvisor(0);
+          curr = curr->next;
+        }
+      }
+    }
+    if (check == true) {
+      cout << "Successfully deleted this member from the table." << endl;
+    } else {
+      cout << "Could not delete this faculty from the table. " << endl;
+    }
+  }
+  cout << endl;
 }
 
 //option 9
@@ -301,16 +447,96 @@ void DBSimulation::addFaculty() {
   Faculty *f = new Faculty(id, facultyName, field, department);
   m_masterFaculty->insert(id, f);
   cout << endl;
+
+  //if this new faculty is the root node, check if any students don't have faculty members
+  if (f == m_masterFaculty->getRootNode()->value) {
+    TreeNode<Student> *root = m_masterStudent->getRootNode();
+    iterate(root, f);
+  }
 }
 
 //option 11
 void DBSimulation::changeStudentAdvisor() {
-  cout << "Change the student's advisor" << endl;
+  printStudents(m_masterStudent->getRootNode());
+  cout << endl;
+  cout << "Please enter the student's ID whos advisor you would like to change: " << endl;
+  //cout << "Enter all of the new information for the student being added: " << endl;
+  cout << endl;
+  int id = 0;
+  cout << "Enter the ID of the student: " << endl;
+  cin >> id;
+  while (cin.fail()) {
+    cout << "Wrong data type. Please type in an integer for the ID: " << endl;
+    cin.clear();
+    cin.ignore();
+    cin >> id;
+  }
+  Student *s = m_masterStudent->search(id);
+  while (s == NULL) {
+    cout << "The faculty ID you entered is invalid. Try again: " << endl;
+    cin >> id;
+    s = m_masterStudent->search(id);
+  }
+  int currAdvisor = s->getAdvisor();
+  printFaculty(m_masterFaculty->getRootNode());
+  cout << "Here are all of the advisors. Enter the id of the advisor you want to switch to: " << endl;
+  int idF = 0;
+  cin >> idF;
+  while (cin.fail()) {
+    cout << "Wrong data type. Please type in an integer for the ID: " << endl;
+    cin.clear();
+    cin.ignore();
+    cin >> idF;
+  }
+  Faculty *f = m_masterFaculty->search(idF);
+  while (f == NULL) {
+    cout << "The faculty ID you entered is invalid. Try again: " << endl;
+    cin >> id;
+    f = m_masterFaculty->search(id);
+  }
+  m_masterStudent->search(id)->setAdvisor(idF);
+  Faculty *oldF = m_masterFaculty->search(currAdvisor);
+  int pos = oldF->getAdvisees()->search(id);
+  oldF->getAdvisees()->removeAtPos(pos);
+  cout << "Successfuly changed advisors!" << endl;
 }
 
 //option 12
 void DBSimulation::removeAdvisee() {
-  cout << "Remove advisee from a faculty" << endl;
+  //deleting student from advisor's list
+  printFaculty(m_masterFaculty->getRootNode());
+  cout << endl;
+  cout << "Enter the faculty ID that you want to remove the student from: " << endl;
+  int id = 0;
+  cin >> id;
+  while (cin.fail()) {
+    cout << "Wrong data type. Please type in an integer for the ID: " << endl;
+    cin.clear();
+    cin.ignore();
+    cin >> id;
+  }
+  Faculty *f = m_masterFaculty->search(id);
+  while (f == NULL) {
+    cout << "The faculty ID you entered is invalid. Try again: " << endl;
+    cin >> id;
+    f = m_masterFaculty->search(id);
+  }
+  //now ask which student you want to delete
+  f->getAdvisees()->printList();
+  cout << "Here are their advisees. Enter the id of the student you want to remove: " << endl;
+  int sID = 0;
+  cin >> sID;
+  while (cin.fail()) {
+    cout << "Wrong data type. Please type in an integer for the ID: " << endl;
+    cin.clear();
+    cin.ignore();
+    cin >> sID;
+  }
+  int pos = f->getAdvisees()->search(sID);
+  f->getAdvisees()->removeAtPos(pos);
+  //set student advisor to 0 since they're getting removed from list
+  m_masterStudent->search(sID)->setAdvisor(0);
+  cout << "Sucessfully removed advisee!" << endl;
 }
 
 //option 13
@@ -320,6 +546,7 @@ void DBSimulation::rollback() {
 
 //option 14
 void DBSimulation::exit() {
+  //check if the students temp list has IDs in it
   cout << "exit" << endl;
 }
 
@@ -329,4 +556,16 @@ BST<Student>* DBSimulation::getStudentTree() {
 
 BST<Faculty>* DBSimulation::getFacultyTree() {
   return m_masterFaculty;
+}
+
+void DBSimulation::iterate(TreeNode<Student> *node, Faculty* f) {
+  if (node != NULL) {
+    iterate(node->left, f);
+    Student* s = node->value;
+    if (s->getAdvisor() == 0) {
+      s->setAdvisor(f->getId());
+      f->getAdvisees()->insertFront(s->getId());
+    }
+    iterate(node->right, f);
+  }
 }

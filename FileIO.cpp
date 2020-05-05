@@ -19,52 +19,116 @@ void FileIO::checkIfEmpty() {
   //if the student file doesn't exist, that means the faculty one doesn't either
 
   if (!inFS.is_open()) {
+    inFS.close();
     cout << "Files don't exist. Program will create an empty student and faculty table" << endl;
     DBSimulation *simulate = new DBSimulation();
     cout << endl;
     cout << "NOTICE: Since database is empty, insert new faculty members first before adding students!!" << endl;
     simulate->userSelection();
     //serialize after user finishes doing everything
+
+    studentTable = simulate->getStudentTree();
+    facultyTable = simulate->getFacultyTree();
     serialize();
+
+    // Student *s = studentTable->getRootNode()->value;
+    // outFS.open(m_studentFile);
+    // cout << "Seg fault 1" << endl;
+    // outFS.write((char*)&s,sizeof(*s));
+    // outFS.close();
+
+
   } else {
-    //files are not emoty so start deserializing and put into BST member variables
+    //files are not empty so start deserializing and put into BST member variables
+    inFS.close();
     deserialize();
+    // Student *s1;
+    // cout << "Seg fault 2" << endl;
+    // inFS.open(m_studentFile);
+    // inFS.read((char*)&s1, sizeof(*s1));
+    // inFS.close();
+    //
+    // cout << "Seg fault 3" << endl;
+    // cout << s1->getName() << endl;
+    // cout << s1->getId() << endl;
   }
 
-  inFS.close();
+
+  // Student *s0 = new Student(12,"Jessie","Frsh","CS",3.8,2);
+  // studentTable->insert(12,s0);
+  // Student *s = studentTable->getRootNode()->value;
+  //
+  // ofstream outFS;
+  //
+  // outFS.open(m_studentFile);
+  //
+  // outFS.write((char*)&s,sizeof(s));
+  // outFS.close();
+  // ifstream inFS;
+  // inFS.open(m_studentFile);
+  // Student *s1;
+  // inFS.read((char*)&s1, sizeof(s1));
+  // inFS.close();
+  //
+  // cout << s1->getName() << endl;
+  // cout << s1->getId() << endl;
 }
 
 //use this method to deserialize the files if they do exist
 //DESERIALIZE DOESN'T WORK
 void FileIO::deserialize() {
+
   //first do the student file
   inFS.open(m_studentFile);
-  Student *s;
-  while (inFS.read((char*)&s, sizeof(s))) {
-    int key = s->getId(); //get the key before inserting into tree
-    studentTable->insert(key, s);
-  }
-
+  Student* s;
+  inFS.read((char*)&s, sizeof(*s));
   inFS.close();
 
-  //now read in the faculty file
-  inFS.open(m_facultyFile);
-  Faculty *f;
-  while (inFS.read((char*)&f, sizeof(f))) {
-    int key = f->getId(); //get the key before inserting into tree
-    facultyTable->insert(key, f);
-  }
-  inFS.read((char*)&f, sizeof(f));
-  int key1 = f->getId();
-  facultyTable->insert(key1, f);
 
-  inFS.close();
+
+  cout << s->getName() << endl;
+  //
+  //
+  // int key = s->getId();
+  // studentTable->insert(key, s);
+
+
+  // cout << "Check 2" << endl;
+  // while (inFS.good()) {
+  //   Student *s;
+  //   cout << "Check 3" << endl;
+  //   inFS.read((char*)&s, sizeof(*s));
+  //   cout << "Check 4" << endl;
+  //   if (inFS.good()) {
+  //     cout << "Check 5" << endl;
+  //     int key = s->getId();
+  //     cout << "Check 6" << endl;
+  //     studentTable->insert(key,s);
+  //   }
+  // }
+
+
+
+
+  // //now read in the faculty file
+  // inFS.open(m_facultyFile);
+  // Faculty *f;
+  // inFS.read((char*)&f, sizeof(f));
+  // inFS.close();
+  //
+  // int key1 = f->getId();
+  // facultyTable->insert(key1, f);
 
   DBSimulation *simulate = new DBSimulation(studentTable, facultyTable);
   simulate->userSelection();
   //update the trees in this class with the trees that were updated in the database
   studentTable = simulate->getStudentTree();
   facultyTable = simulate->getFacultyTree();
+
+  //remove contents from binary files before serializing
+  remove("studentTable.bin");
+  remove("facultyTable.bin");
+
   serialize();
 }
 
@@ -91,7 +155,8 @@ void FileIO::traverseStudents(TreeNode<Student> *node, ofstream &o) {
     return;
   }
   traverseStudents(node->left, o);
-  o.write((char*)&(node->value), sizeof(node->value));
+  Student s = *node->value;
+  o.write((char*)&s, sizeof(s));
   traverseStudents(node->right, o);
 }
 
@@ -100,6 +165,7 @@ void FileIO::traverseFaculty(TreeNode<Faculty> *node, ofstream &o) {
     return;
   }
   traverseFaculty(node->left, o);
-  o.write((char*)&(node->value), sizeof(node->value));
+  Faculty f = *node->value;
+  o.write((char*)&f, sizeof(f));
   traverseFaculty(node->right, o);
 }

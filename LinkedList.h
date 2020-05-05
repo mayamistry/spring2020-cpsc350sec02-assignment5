@@ -12,6 +12,7 @@ class LinkedList {
     int search(T val); //returns the position of the node we are looking for
     void remove(T val); //removes wherever the node is using
     //NEED TO DRAW THIS OUT LATER TO MAKE IT WORK
+    void removeAtPos(int pos);
 
     unsigned int getSize();
     bool isEmpty();
@@ -69,7 +70,7 @@ T LinkedList<T>::removeFront() {
     return 1;
   }
 
-  T* temp = front->data;
+  T temp = front->data;
   ListNode<T> *ft = front;
   front = front->next;
   ft->next = NULL;
@@ -102,8 +103,9 @@ int LinkedList<T>::search(T val) {
 
 template <class T>
 void LinkedList<T>::remove(T val) {
-  ListNode<T> *curr;
+  ListNode<T> *curr = front;
   ListNode<T> *prev = front;
+
 
   while (curr != NULL) {
     //loop until I find the position
@@ -121,7 +123,28 @@ void LinkedList<T>::remove(T val) {
   //continue with actual deletion process
   prev->next = curr->next;
   curr->next = NULL;
-  T* temp = curr->data;
+  T temp = curr->data;
+  delete curr;
+  size--;
+}
+
+template <class T>
+void LinkedList<T>::removeAtPos(int pos){
+  //error checking to make sure pos does not exceed size of ListNode
+  int idx = 0;
+  ListNode<T> *curr = front;
+  ListNode<T> *prev = front;
+  while(idx != pos){
+    //loop until I find the position
+    prev = curr;
+    curr = curr->next;
+    idx++;
+  }
+
+  //now lets continue w the deletion processing
+  prev->next = curr->next;
+  curr->next = NULL;
+  T temp = curr->data;
   delete curr;
   size--;
 }

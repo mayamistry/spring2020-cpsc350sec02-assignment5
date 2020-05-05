@@ -30,7 +30,10 @@ class DBSimulation {
     BST<Student>* getStudentTree();
     BST<Faculty>* getFacultyTree();
 
+    void iterate(TreeNode<Student> *node, Faculty *f);
+
   private:
     BST<Student> *m_masterStudent;
     BST<Faculty> *m_masterFaculty;
+    //list to keep students that don't have a faculty member if faculty table is empty
 };
