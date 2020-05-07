@@ -24,6 +24,9 @@ public:
   void setAdvisees(LinkedList<int> *advisees);
   LinkedList<int>* getAdvisees();
 
+  //convert advisees ids into a string to put onto the file
+  string adviseesForFile();
+
   //create compareTo method
   int compareTo(Faculty *f); //print 1 if this object is ID less than other, or 0
 

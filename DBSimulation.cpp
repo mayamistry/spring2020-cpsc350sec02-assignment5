@@ -4,11 +4,13 @@ DBSimulation::DBSimulation() {
   //create two empty BSTs
   m_masterStudent = new BST<Student>();
   m_masterFaculty = new BST<Faculty>();
+  m_rollback = new Rollback();
 }
 
 DBSimulation::DBSimulation(BST<Student> *student, BST<Faculty> *faculty) {
   m_masterStudent = student;
   m_masterFaculty = faculty;
+  m_rollback = new Rollback();
 }
 
 DBSimulation::~DBSimulation() {
@@ -306,6 +308,7 @@ void DBSimulation::addStudent() {
   Student *s = new Student(id, studentName, field, major, gpa, facultyID);
   m_masterStudent->insert(id, s);
   cout << endl;
+  m_rollback->addStudentAction(s,"delete student");
 }
 
 //option 8
@@ -324,6 +327,7 @@ void DBSimulation::deleteStudent() {
     cin >> id;
   }
   Student *deletedStudent = m_masterStudent->search(id);
+  m_rollback->addStudentAction(deletedStudent,"add student");
   while (deletedStudent == NULL) {
     cout << "The faculty ID you entered is invalid. Try again: " << endl;
     cin >> id;
@@ -368,6 +372,7 @@ void DBSimulation::deleteFaculty() {
     }
     Faculty *temp = f; //use this temp value to redistribute advisees
     displayFacultyInfo(f);
+    m_rollback->addFacultyAction(f,"add faculty");
     bool check = m_masterFaculty->deleteNode(id);
     //after getting valid faculty, need to distribute all of its advisees
     Faculty *newFaculty;
@@ -453,6 +458,7 @@ void DBSimulation::addFaculty() {
     TreeNode<Student> *root = m_masterStudent->getRootNode();
     iterate(root, f);
   }
+  m_rollback->addFacultyAction(f,"delete faculty");
 }
 
 //option 11
@@ -498,6 +504,9 @@ void DBSimulation::changeStudentAdvisor() {
   Faculty *oldF = m_masterFaculty->search(currAdvisor);
   int pos = oldF->getAdvisees()->search(id);
   oldF->getAdvisees()->removeAtPos(pos);
+  //now add this student to the new faculty
+  Faculty *newf = m_masterFaculty->search(idF);
+  newf->getAdvisees()->insertFront(id);
   cout << "Successfuly changed advisors!" << endl;
 }
 
@@ -541,7 +550,32 @@ void DBSimulation::removeAdvisee() {
 
 //option 13
 void DBSimulation::rollback() {
-  cout << "rollback" << endl;
+  if (m_rollback->checkIfEmpty()) {
+    cout << "There are no actions to undo." << endl;
+  } else {
+    string action = m_rollback->undoAction();
+    if (action == "add student") {
+      Student *s = m_rollback->popStudent();
+      addStudentRollback(s);
+      cout << "Successfully did a rollback and added the student that you just deleted." << endl;
+      cout << endl;
+    } else if (action == "delete student") {
+      Student *s = m_rollback->popStudent();
+      deleteStudentRollback(s);
+      cout << "Successfully did a rollback and deleted the student that you just added." << endl;
+      cout << endl;
+    } else if (action == "add faculty") {
+      Faculty *f = m_rollback->popFaculty();
+      addFacultyRollback(f);
+      cout << "Successfully did a rollback and added the faculty that you just deleted." << endl;
+      cout << endl;
+    } else if (action == "delete faculty") {
+      Faculty *f = m_rollback->popFaculty();
+      deleteFacultyRollback(f);
+      cout << "Successfully did a rollback and deleted the faculty that you just added." << endl;
+      cout << endl;
+    }
+  }
 }
 
 //option 14
@@ -567,5 +601,88 @@ void DBSimulation::iterate(TreeNode<Student> *node, Faculty* f) {
       f->getAdvisees()->insertFront(s->getId());
     }
     iterate(node->right, f);
+  }
+}
+
+void DBSimulation::deleteStudentRollback(Student *s) {
+  int id = s->getId();
+  int facultyID = s->getAdvisor();
+  bool check = m_masterStudent->deleteNode(id);
+
+  //deleting student from advisor's list
+  Faculty *f = m_masterFaculty->search(facultyID);
+  int pos = f->getAdvisees()->search(id);
+  f->getAdvisees()->removeAtPos(pos);
+}
+
+void DBSimulation::deleteFacultyRollback(Faculty *f) {
+  int id = f->getId();
+  bool check = m_masterFaculty->deleteNode(id);
+
+
+  Faculty *temp = f; //use this temp value to redistribute advisees
+  //after getting valid faculty, need to distribute all of its advisees
+  Faculty *newFaculty;
+  if (!temp->getAdvisees()->isEmpty()) {
+    if (!m_masterFaculty->isEmpty()) {
+      //that means we need to redistrubute the advisees before actually deleting the node
+      TreeNode<Faculty> *newRoot = m_masterFaculty->getRootNode();
+      printFaculty(newRoot);
+      cout << "Enter the ID of the faculty you want to give the advisees to: " << endl;
+      int newID = 0;
+      cin >> newID;
+      while (cin.fail()) {
+        cout << "Wrong data type. Please type in an integer for the ID: " << endl;
+        cin.clear();
+        cin.ignore();
+        cin >> newID;
+      }
+      //check if facultyID is valid before trying to remove it
+      newFaculty = m_masterFaculty->search(newID);
+      while (newFaculty == NULL) {
+        cout << "The faculty ID you entered is invalid. Try again: " << endl;
+        cin >> id;
+        newFaculty = m_masterFaculty->search(newID);
+      }
+      //found the faculty we're going to use, so redistribute
+      ListNode<int> *curr = temp->getAdvisees()->front;
+      while (curr != NULL) {
+        int currId = curr->data;
+        Student *s = m_masterStudent->search(currId);
+        s->setAdvisor(newID);
+        newFaculty->getAdvisees()->insertFront(currId);
+        curr = curr->next;
+      }
+    } else {
+      ListNode<int> *curr = temp->getAdvisees()->front;
+      while (curr != NULL) {
+        int currId = curr->data;
+        Student *s = m_masterStudent->search(currId);
+        s->setAdvisor(0);
+        curr = curr->next;
+      }
+    }
+  }
+  cout << endl;
+}
+
+void DBSimulation::addStudentRollback(Student *s) {
+  m_masterStudent->insert(s->getId(), s);
+  int facultyID = s->getAdvisor();
+  if (facultyID != 0) {
+    Faculty *f = m_masterFaculty->search(facultyID);
+    f->getAdvisees()->insertFront(s->getId());
+  }
+}
+
+void DBSimulation::addFacultyRollback(Faculty *f) {
+  m_masterFaculty->insert(f->getId(), f);
+  LinkedList<int> *advis = f->getAdvisees();
+  ListNode<int> *curr = advis->front;
+  while (curr != NULL) {
+    int studentID = curr->data;
+    Student *s = m_masterStudent->search(studentID);
+    s->setAdvisor(f->getId());
+    curr = curr->next;
   }
 }

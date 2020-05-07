@@ -70,3 +70,18 @@ int Faculty::compareTo(Faculty *f) {
     return 1;
   }
 }
+
+string Faculty::adviseesForFile() {
+  string advisees = "";
+  if (m_advisees->isEmpty()) {
+    advisees = "e"; //e means the advisee list is empty
+  } else {
+    ListNode<int> *curr = m_advisees->front;
+    while (curr != NULL) {
+      int id = curr->data;
+      advisees += to_string(id) + " ";
+      curr = curr->next;
+    }
+  }
+  return advisees;
+}

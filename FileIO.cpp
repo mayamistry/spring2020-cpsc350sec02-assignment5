@@ -2,8 +2,8 @@
 
 //initialzie file names for the .bin files
 FileIO::FileIO() {
-  m_studentFile = "studentTable.bin";
-  m_facultyFile = "facultyTable.bin";
+  m_studentFile = "studentTable.txt";
+  m_facultyFile = "facultyTable.txt";
   studentTable = new BST<Student>();
   facultyTable = new BST<Faculty>();
 }
@@ -31,47 +31,11 @@ void FileIO::checkIfEmpty() {
     facultyTable = simulate->getFacultyTree();
     serialize();
 
-    // Student *s = studentTable->getRootNode()->value;
-    // outFS.open(m_studentFile);
-    // cout << "Seg fault 1" << endl;
-    // outFS.write((char*)&s,sizeof(*s));
-    // outFS.close();
-
-
   } else {
     //files are not empty so start deserializing and put into BST member variables
     inFS.close();
     deserialize();
-    // Student *s1;
-    // cout << "Seg fault 2" << endl;
-    // inFS.open(m_studentFile);
-    // inFS.read((char*)&s1, sizeof(*s1));
-    // inFS.close();
-    //
-    // cout << "Seg fault 3" << endl;
-    // cout << s1->getName() << endl;
-    // cout << s1->getId() << endl;
   }
-
-
-  // Student *s0 = new Student(12,"Jessie","Frsh","CS",3.8,2);
-  // studentTable->insert(12,s0);
-  // Student *s = studentTable->getRootNode()->value;
-  //
-  // ofstream outFS;
-  //
-  // outFS.open(m_studentFile);
-  //
-  // outFS.write((char*)&s,sizeof(s));
-  // outFS.close();
-  // ifstream inFS;
-  // inFS.open(m_studentFile);
-  // Student *s1;
-  // inFS.read((char*)&s1, sizeof(s1));
-  // inFS.close();
-  //
-  // cout << s1->getName() << endl;
-  // cout << s1->getId() << endl;
 }
 
 //use this method to deserialize the files if they do exist
@@ -80,13 +44,196 @@ void FileIO::deserialize() {
 
   //first do the student file
   inFS.open(m_studentFile);
-  Student* s;
-  inFS.read((char*)&s, sizeof(*s));
+  string currLine = "";
+
+  while (!inFS.eof()) {
+    getline(inFS, currLine);
+    if(!inFS.fail()) {
+      int size = currLine.size();
+      //input the name first
+      string idTemp = "";
+      string name = "";
+      string level = "";
+      string major = "";
+      string gpaTemp = "";
+      string advisorTemp = "";
+      bool idCheck = false;
+      bool nameCheck = false;
+      bool levelCheck = false;
+      bool majorCheck = false;
+      bool gpaCheck = false;
+      bool advisorCheck = false;
+      //Input the id
+      int i = 0;
+      while (!idCheck) {
+        if (currLine[i] == '|') {
+          ++i;
+          idCheck = true;
+          break;
+        } else {
+          idTemp += currLine[i];
+          ++i;
+        }
+      }
+      //Input the name
+      while (!nameCheck) {
+        if (currLine[i] == '|') {
+          ++i;
+          nameCheck = true;
+          break;
+        } else {
+          name += currLine[i];
+          ++i;
+        }
+      }
+      //Input the level
+      while (!levelCheck) {
+        if (currLine[i] == '|') {
+          ++i;
+          levelCheck = true;
+          break;
+        } else {
+          level += currLine[i];
+          ++i;
+        }
+      }
+      //Input the major
+      while (!majorCheck) {
+        if (currLine[i] == '|') {
+          ++i;
+          majorCheck = true;
+          break;
+        } else {
+          major += currLine[i];
+          ++i;
+        }
+      }
+      //Input the gpa
+      while (!gpaCheck) {
+        if (currLine[i] == '|') {
+          ++i;
+          gpaCheck = true;
+          break;
+        } else {
+          gpaTemp += currLine[i];
+          ++i;
+        }
+      }
+      while (!advisorCheck) {
+        if (currLine[i] == '|') {
+          ++i;
+          advisorCheck = true;
+          break;
+        } else {
+          advisorTemp += currLine[i];
+          ++i;
+        }
+      }
+      //Input the advisor
+      int id = stoi(idTemp);
+      double gpa = stof(gpaTemp);
+      int advisor = stoi(advisorTemp);
+      Student *s = new Student(id, name, level, major, gpa, advisor);
+      studentTable->insert(id, s);
+    }
+  }
+
   inFS.close();
 
+  //then do the faculty file
+  inFS.open(m_facultyFile);
 
+  string currLine1 = "";
 
-  cout << s->getName() << endl;
+  while (!inFS.eof()) {
+    getline(inFS, currLine1);
+    if(!inFS.fail()) {
+      int size = currLine1.size();
+      //input the name first
+      string idTemp = "";
+      string name = "";
+      string level = "";
+      string department = "";
+      string advisee = "";
+      LinkedList<int> *advisees = new LinkedList<int>();
+      bool idCheck = false;
+      bool nameCheck = false;
+      bool levelCheck = false;
+      bool departmentCheck = false;
+      bool adviseesCheck = false;
+      //Input the id
+      int i = 0;
+      while (!idCheck) {
+        if (currLine1[i] == '|') {
+          ++i;
+          idCheck = true;
+          break;
+        } else {
+          idTemp += currLine1[i];
+          ++i;
+        }
+      }
+      //Input the name
+      while (!nameCheck) {
+        if (currLine1[i] == '|') {
+          ++i;
+          nameCheck = true;
+          break;
+        } else {
+          name += currLine1[i];
+          ++i;
+        }
+      }
+      //Input the level
+      while (!levelCheck) {
+        if (currLine1[i] == '|') {
+          ++i;
+          levelCheck = true;
+          break;
+        } else {
+          level += currLine1[i];
+          ++i;
+        }
+      }
+      //Input the department
+      while (!departmentCheck) {
+        if (currLine1[i] == '|') {
+          ++i;
+          departmentCheck = true;
+          break;
+        } else {
+          department += currLine1[i];
+          ++i;
+        }
+      }
+      //Input the advisees
+      //first check if list is empty
+      if (currLine[i] == 'e') {
+        //then do nothing
+        adviseesCheck == true;
+      }
+      while (!adviseesCheck) {
+        if (currLine1[i] == '|') {
+          ++i;
+          adviseesCheck = true;
+          break;
+        } else if (currLine1[i] != ' ') {
+          advisee += currLine1[i];
+          ++i;
+        } else {
+          int a = stoi(advisee);
+          advisees->insertFront(a);
+          ++i;
+        }
+      }
+      int id = stoi(idTemp);
+      Faculty *f = new Faculty(id, name, level, department);
+      f->setAdvisees(advisees);
+      facultyTable->insert(id, f);
+    }
+  }
+
+  inFS.close();
   //
   //
   // int key = s->getId();
@@ -126,8 +273,8 @@ void FileIO::deserialize() {
   facultyTable = simulate->getFacultyTree();
 
   //remove contents from binary files before serializing
-  remove("studentTable.bin");
-  remove("facultyTable.bin");
+  remove("studentTable.txt");
+  remove("facultyTable.txt");
 
   serialize();
 }
@@ -155,8 +302,9 @@ void FileIO::traverseStudents(TreeNode<Student> *node, ofstream &o) {
     return;
   }
   traverseStudents(node->left, o);
-  Student s = *node->value;
-  o.write((char*)&s, sizeof(s));
+  Student *s = node->value;
+  //o.write((char*)&s, sizeof(s));
+  o << s->getId() << "|" << s->getName() << "|" << s->getLevel() << "|" << s->getMajor() << "|" << s->getGpa() << "|" << s->getAdvisor() << "|" << endl;
   traverseStudents(node->right, o);
 }
 
@@ -165,7 +313,8 @@ void FileIO::traverseFaculty(TreeNode<Faculty> *node, ofstream &o) {
     return;
   }
   traverseFaculty(node->left, o);
-  Faculty f = *node->value;
-  o.write((char*)&f, sizeof(f));
+  Faculty *f = node->value;
+  //o.write((char*)&f, sizeof(f));
+  o << f->getId() << "|" << f->getName() << "|" << f->getLevel() << "|" << f->getDepartment() << "|" << f->adviseesForFile() << "|" << endl;
   traverseFaculty(node->right, o);
 }

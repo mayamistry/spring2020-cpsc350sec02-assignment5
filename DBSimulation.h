@@ -1,6 +1,5 @@
-#include "Student.h"
-#include "Faculty.h"
 #include "BST.h"
+#include "Rollback.h"
 
 //Database simulation class
 class DBSimulation {
@@ -26,6 +25,12 @@ class DBSimulation {
     void rollback();
     void exit();
 
+    //methods if user decides to rollback
+    void deleteStudentRollback(Student *s);
+    void deleteFacultyRollback(Faculty *f);
+    void addStudentRollback(Student *s);
+    void addFacultyRollback(Faculty *f);
+
     //getter methods for the tables
     BST<Student>* getStudentTree();
     BST<Faculty>* getFacultyTree();
@@ -35,5 +40,6 @@ class DBSimulation {
   private:
     BST<Student> *m_masterStudent;
     BST<Faculty> *m_masterFaculty;
+    Rollback *m_rollback;
     //list to keep students that don't have a faculty member if faculty table is empty
 };
