@@ -263,6 +263,13 @@ void DBSimulation::addStudent() {
     cin.ignore();
     cin >> id;
   }
+  //Check if the student exists already
+  Student *s1 = m_masterStudent->search(id);
+  while (s1 != NULL) {
+    cout << "This id already exists. Please enter a brand new and unique ID: " << endl;
+    cin >> id;
+    s1 = m_masterStudent->search(id);
+  }
   string studentName = "";
   cout << "Enter the name of the student: " << endl;
   cin.ignore();
@@ -437,6 +444,13 @@ void DBSimulation::addFaculty() {
     cin.clear();
     cin.ignore();
     cin >> id;
+  }
+  //Check if the student exists already
+  Faculty *f1 = m_masterFaculty->search(id);
+  while (f1 != NULL) {
+    cout << "This id already exists. Please enter a brand new and unique ID: " << endl;
+    cin >> id;
+    f1 = m_masterFaculty->search(id);
   }
   string facultyName = "";
   cout << "Enter the name of the faculty member: " << endl;
