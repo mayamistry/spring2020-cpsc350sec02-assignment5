@@ -514,11 +514,15 @@ void DBSimulation::changeStudentAdvisor() {
     cin >> id;
     f = m_masterFaculty->search(id);
   }
-  m_masterStudent->search(id)->setAdvisor(idF);
+  //Remove student from the old advisor's list
   Faculty *oldF = m_masterFaculty->search(currAdvisor);
   int pos = oldF->getAdvisees()->search(id);
+  cout << "SIZE: " << oldF->getAdvisees()->getSize() << endl;
+  cout << "POSITION: " << pos << endl;
   oldF->getAdvisees()->removeAtPos(pos);
-  //now add this student to the new faculty
+  //Set student advisor to the new faculty ID
+  m_masterStudent->search(id)->setAdvisor(idF);
+  //Add student to new advisor's list
   Faculty *newf = m_masterFaculty->search(idF);
   newf->getAdvisees()->insertFront(id);
   cout << "Successfuly changed advisors!" << endl;
@@ -595,7 +599,7 @@ void DBSimulation::rollback() {
 //option 14
 void DBSimulation::exit() {
   //check if the students temp list has IDs in it
-  cout << "exit" << endl;
+  cout << "Exiting the program and serializing databases into the files." << endl;
 }
 
 BST<Student>* DBSimulation::getStudentTree() {

@@ -8,6 +8,7 @@ class LinkedList {
     ~LinkedList();
 
     void insertFront(T data);
+    void insertBack(T data);
     T removeFront();
     int search(T val); //returns the position of the node we are looking for
     void remove(T val); //removes wherever the node is using
@@ -60,6 +61,21 @@ void LinkedList<T>::insertFront(T data) {
   ListNode<T> *node = new ListNode<T>(data);
   node->next = front;
   front = node;
+  ++size;
+}
+
+template <class T>
+void LinkedList<T>::insertBack(T data) {
+  ListNode<T> *node = new ListNode<T>(data);
+  ListNode<T> *curr = front;
+  while (curr->next != NULL) {
+    curr = curr->next;
+  }
+  if (isEmpty()) {
+    front = node;
+  } else {
+    curr->next = node;
+  }
   ++size;
 }
 
@@ -140,10 +156,25 @@ void LinkedList<T>::removeAtPos(int pos){
     curr = curr->next;
     idx++;
   }
-
+  //if the node getting deleted is the last node
+  //if the node getting deleted is the front node
+  if (isEmpty()) {
+    cout << "Can't remove since list is empty. " << endl;
+    return;
+  } else if (size == 1) {
+    curr->next = NULL;
+  } else if (pos == 0) {
+    front = front->next;
+    curr->next = NULL;
+  } else if (pos == size - 1) {
+    prev->next = NULL;
+  } else {
+    prev->next = curr->next;
+    curr->next = NULL;
+  }
   //now lets continue w the deletion processing
-  prev->next = curr->next;
-  curr->next = NULL;
+
+  //front = curr->next;
   T temp = curr->data;
   delete curr;
   size--;

@@ -14,7 +14,14 @@ Rollback::~Rollback() {
 
 void Rollback::addStudentAction(Student *s, string action) {
   if (m_actionStack->isFull()) {
-    //do all the weird stuff
+    GenStack<ActionType> *temp = new GenStack<ActionType>(5);
+    for (int i = 0; i < 5; ++i) {
+      temp->push(m_actionStack->pop());
+    }
+    ActionType *lastItem = temp->pop();
+    for (int i = 0; i < 4; ++i) {
+      m_actionStack->push(temp->pop());
+    }
   } else {
     m_studentStack->push(s);
     ActionType *t = new ActionType(action);
@@ -24,12 +31,18 @@ void Rollback::addStudentAction(Student *s, string action) {
 
 void Rollback::addFacultyAction(Faculty *f, string action) {
   if (m_actionStack->isFull()) {
-    //do all the weird stuff
-  } else {
-    m_facultyStack->push(f);
-    ActionType *t = new ActionType(action);
-    m_actionStack->push(t);
+    GenStack<ActionType> *temp = new GenStack<ActionType>(5);
+    for (int i = 0; i < 5; ++i) {
+      temp->push(m_actionStack->pop());
+    }
+    ActionType *lastItem = temp->pop();
+    for (int i = 0; i < 4; ++i) {
+      m_actionStack->push(temp->pop());
+    }
   }
+  m_facultyStack->push(f);
+  ActionType *t = new ActionType(action);
+  m_actionStack->push(t);
 }
 
 string Rollback::undoAction() {

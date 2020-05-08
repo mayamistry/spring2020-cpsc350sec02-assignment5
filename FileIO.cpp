@@ -223,6 +223,7 @@ void FileIO::deserialize() {
         } else {
           int a = stoi(advisee);
           advisees->insertFront(a);
+          advisee = "";
           ++i;
         }
       }
